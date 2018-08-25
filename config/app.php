@@ -160,6 +160,12 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        // Blog service providers
+        App\Providers\AuthorServiceProvider::class,
+        App\Providers\BlogCategoryServiceProvider::class,
+        App\Providers\BlogPostServiceProvider::class,
+        App\Providers\CommentServiceProvider::class,
+        App\Providers\PageServiceProvider::class,
     ],
 
     /*

@@ -1,6 +1,6 @@
 <?php namespace App\Blog;
 
-use App\Tools\SeoTools;
+use App\Helpers\SeoHelper;
 use Illuminate\Contracts\Config\Repository as Config;
 use App\Blog\Page\PageRepositoryInterface;
 
@@ -12,7 +12,7 @@ use App\Blog\Page\PageRepositoryInterface;
 class PageService {
 
     private $pageRepository;
-    private $seoTools;
+    private $seoHelper;
     private $config;
 
     /**
@@ -20,11 +20,11 @@ class PageService {
      */
     public function __construct(
         PageRepositoryInterface $pageRepository,
-        SeoTools $seoTools,
+        SeoHelper $seoHelper,
         Config $config
     ) {
         $this->pageRepository = $pageRepository;
-        $this->seoTools = $seoTools;
+        $this->seoHelper = $seoHelper;
         $this->config = $config;
     }
 
@@ -53,9 +53,9 @@ class PageService {
      */
     public function savePage($input) {
         if (empty($input['url'])) {
-            $input['url'] = $this->seoTools->createNiceUrl($input['title']);
+            $input['url'] = $this->seoHelper->createNiceUrl($input['title']);
         } else {
-            $input['url'] = $this->seoTools->createNiceUrl($input['url']);
+            $input['url'] = $this->seoHelper->createNiceUrl($input['url']);
         }
         if (isset($input['id'])) {
             $page = $this->pageRepository->updatePage($input);

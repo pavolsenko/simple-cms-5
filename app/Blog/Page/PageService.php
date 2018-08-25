@@ -1,15 +1,15 @@
 <?php namespace App\Blog\Page;
 
-use App\Tools\SeoTools;
+use App\Helpers\SeoHelper;
 
 class PageService {
 
     private $pageRepository;
-    private $seoTools;
+    private $seoHelper;
 
-    public function __construct(PageRepositoryInterface $pageRepositoryInterface, SeoTools $seoTools) {
+    public function __construct(PageRepositoryInterface $pageRepositoryInterface, SeoHelper $seoHelper) {
         $this->pageRepository = $pageRepositoryInterface;
-        $this->seoTools = $seoTools;
+        $this->seoHelper = $seoHelper;
     }
 
     public function getPageById($id) {
@@ -18,9 +18,9 @@ class PageService {
 
     public function savePage($input) {
         if (empty($input['url'])) {
-            $input['url'] = $this->seoTools->createNiceUrl($input['title']);
+            $input['url'] = $this->seoHelper->createNiceUrl($input['title']);
         } else {
-            $input['url'] = $this->seoTools->createNiceUrl($input['url']);
+            $input['url'] = $this->seoHelper->createNiceUrl($input['url']);
         }
         if (isset($input['id'])) {
             $page = $this->pageRepository->updatePage($input);

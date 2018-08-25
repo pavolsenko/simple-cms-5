@@ -1,17 +1,18 @@
 <?php namespace App\Blog;
 
-use App\Blog\BlogPost\BlogPostRepositoryInterface;
-use App\Blog\BlogCategory\BlogCategoryRepositoryInterface;
 use App\Blog\Author\AuthorRepositoryInterface;
+use App\Blog\BlogCategory\BlogCategoryRepositoryInterface;
+use App\Blog\BlogPost\BlogPostRepositoryInterface;
 use App\Blog\Comment\CommentRepositoryInterface;
+use App\Helpers\SeoHelper;
 use Illuminate\Contracts\Config\Repository as Config;
-use App\Tools\SeoTools;
 
 /**
  * Class BlogService
  * @package App\Blog
  */
-class BlogService {
+class BlogService
+{
 
     const ENABLED_ONLY = true;
     const NUMBER_OF_RELATED_POSTS = 5;
@@ -20,7 +21,7 @@ class BlogService {
     private $blogCategoryRepository;
     private $authorRepository;
     private $commentRepository;
-    private $seoTools;
+    private $seoHelper;
     private $config;
 
     /**
@@ -31,14 +32,15 @@ class BlogService {
         BlogCategoryRepositoryInterface $blogCategoryRepositoryInterface,
         AuthorRepositoryInterface $authorRepositoryInterface,
         CommentRepositoryInterface $commentRepositoryInterface,
-        SeoTools $seoTools,
+        SeoHelper $seoHelper,
         Config $config
-    ) {
+    )
+    {
         $this->blogPostRepository = $blogPostRepositoryInterface;
         $this->blogCategoryRepository = $blogCategoryRepositoryInterface;
         $this->authorRepository = $authorRepositoryInterface;
         $this->commentRepository = $commentRepositoryInterface;
-        $this->seoTools = $seoTools;
+        $this->seoHelper = $seoHelper;
         $this->config = $config;
     }
 
@@ -47,7 +49,8 @@ class BlogService {
      *
      * @return array
      */
-    public function getBlogPostsForHomepage() {
+    public function getBlogPostsForHomepage()
+    {
         $posts = $this->blogPostRepository->getAllBlogPosts(self::ENABLED_ONLY);
         return $posts;
     }
@@ -57,31 +60,24 @@ class BlogService {
      *
      * @return array
      */
-    public function getBlogPostsForAdmin() {
+    public function getBlogPostsForAdmin()
+    {
         return $this->blogPostRepository->getAllBlogPosts();
     }
 
     /**
-     * Gets blog posts for frontend for specific category
-     *
-     * @param $category_id
      * @return array
      */
-    public function getBlogPostsByCategory($category_id) {
-        return $this->blogCategoryRepository->getBlogPostsForCategory($category_id);
-    }
-
-    /**
-     * @return array
-     */
-    public function getBlogCategoriesForHomepage() {
+    public function getBlogCategoriesForHomepage()
+    {
         return $this->blogCategoryRepository->getAllBlogCategories(self::ENABLED_ONLY);
     }
 
     /**
      * @return mixed
      */
-    public function getBlogCategoriesForAdmin() {
+    public function getBlogCategoriesForAdmin()
+    {
         return $this->blogCategoryRepository->getAllBlogCategories();
     }
 
@@ -89,7 +85,8 @@ class BlogService {
      * @param $id
      * @return array
      */
-    public function getBlogPostById($id) {
+    public function getBlogPostById($id)
+    {
         $post = $this->blogPostRepository->getBlogPostById($id);
         return $post;
     }
@@ -100,11 +97,12 @@ class BlogService {
      * @param $input array
      * @return array
      */
-    public function saveBlogPost($input) {
+    public function saveBlogPost($input)
+    {
         if (empty($input['url'])) {
-            $input['url'] = $this->seoTools->createNiceUrl($input['title']);
+            $input['url'] = $this->seoHelper->createNiceUrl($input['title']);
         } else {
-            $input['url'] = $this->seoTools->createNiceUrl($input['url']);
+            $input['url'] = $this->seoHelper->createNiceUrl($input['url']);
         }
         if (isset($input['id'])) {
             $blog_post = $this->blogPostRepository->updateBlogPost($input);
@@ -121,7 +119,8 @@ class BlogService {
      *
      * @return array
      */
-    public function deleteBlogPost($id) {
+    public function deleteBlogPost($id)
+    {
         return $this->blogPostRepository->deleteBlogPost($id);
     }
 
@@ -130,7 +129,8 @@ class BlogService {
      *
      * @return array
      */
-    public function publishBlogPost($id) {
+    public function publishBlogPost($id)
+    {
         return $this->blogPostRepository->publishBlogPost($id);
     }
 
@@ -139,7 +139,8 @@ class BlogService {
      *
      * @return mixed
      */
-    public function unpublishBlogPost($id) {
+    public function unpublishBlogPost($id)
+    {
         return $this->blogPostRepository->unpublishBlogPost($id);
     }
 
@@ -148,7 +149,8 @@ class BlogService {
      *
      * @return mixed
      */
-    public function postComment($input) {
+    public function postComment($input)
+    {
         $result = $this->commentRepository->createComment($input);
         return $result;
     }
@@ -160,7 +162,8 @@ class BlogService {
      *
      * @return array
      */
-    public function getLatestPosts($count) {
+    public function getLatestPosts($count)
+    {
         return $this->blogPostRepository
             ->getLatestPosts($count);
     }
@@ -170,7 +173,8 @@ class BlogService {
      *
      * @return mixed
      */
-    public function getBlogCategoryById($id) {
+    public function getBlogCategoryById($id)
+    {
         return $this->blogCategoryRepository->getBlogCategoryById($id);
     }
 
@@ -183,7 +187,8 @@ class BlogService {
      *
      * @return array
      */
-    public function getRelatedBlogPosts($post_id, $category_id, $number=self::NUMBER_OF_RELATED_POSTS) {
+    public function getRelatedBlogPosts($post_id, $category_id, $number = self::NUMBER_OF_RELATED_POSTS)
+    {
         $posts = $this->getBlogPostsByCategory($category_id);
         $result = [];
         for ($ii = 0; $ii < $number; $ii++) {
@@ -199,16 +204,28 @@ class BlogService {
     }
 
     /**
+     * Gets blog posts for frontend for specific category
+     *
+     * @param $category_id
+     * @return array
+     */
+    public function getBlogPostsByCategory($category_id)
+    {
+        return $this->blogCategoryRepository->getBlogPostsForCategory($category_id);
+    }
+
+    /**
      * Returns array of authors from repository as associated array of their IDs
      *
      * @return array
      */
-    public function getAllAuthorsWithIds() {
+    public function getAllAuthorsWithIds()
+    {
         $authors = $this->authorRepository->getAllAuthors();
         $result = [];
         if (!empty($authors)) {
             foreach ($authors as $author) {
-                $result[$author['id']] = $author['first_name'].' '.$author['last_name'];
+                $result[$author['id']] = $author['first_name'] . ' ' . $author['last_name'];
             }
         }
         return $result;
@@ -220,7 +237,8 @@ class BlogService {
      *
      * @return array
      */
-    public function getAllCategoriesWithIds() {
+    public function getAllCategoriesWithIds()
+    {
         $categories = $this->blogCategoryRepository->getAllBlogCategories();
         $result = [];
         if (!empty($categories)) {
@@ -238,7 +256,8 @@ class BlogService {
      *
      * @return array
      */
-    public function getMetaTags($item) {
+    public function getMetaTags($item)
+    {
 
         // Setting up default values from ENV configuration file
         $meta = [
@@ -286,8 +305,9 @@ class BlogService {
      *
      * @return string
      */
-    public function getAvatarUrl($email) {
-        $url = '//www.gravatar.com/avatar/'.md5(strtolower(trim($email))).'?d=identicon';
+    public function getAvatarUrl($email)
+    {
+        $url = '//www.gravatar.com/avatar/' . md5(strtolower(trim($email))) . '?d=identicon';
         return $url;
     }
 }
