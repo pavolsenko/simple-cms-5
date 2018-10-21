@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Blog\BlogService;
 use Illuminate\Contracts\View\Factory as View;
 
-class homeController extends Controller
+class HomeController extends Controller
 {
 
     protected $view;
